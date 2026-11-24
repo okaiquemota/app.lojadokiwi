@@ -1,0 +1,264 @@
+{
+  "produtos": {
+    "caca-palavras-biblico": {
+      "nome": "Caça-Palavras Bíblico",
+      "precoCentavos": 990,
+      "imagem": "https://lojadokiwi.com.br/imagens/caca-palavras-biblico.webp",
+      "paginas": 38,
+      "arquivos": [
+        {
+          "chave": "produtos/caca-palavras-biblico/caca-palavras-biblico-loja-do-kiwi-6ccd51a6f2.pdf",
+          "nome": "caca-palavras-biblico-loja-do-kiwi.pdf",
+          "local": "fabrica/saida/caca-palavras-biblico/caca-palavras-biblico-loja-do-kiwi.pdf",
+          "bytes": 645175
+        }
+      ],
+      "site": {
+        "id": "caca-palavras-biblico",
+        "checkout": "loja",
+        "nome": "Caça-Palavras Bíblico",
+        "subtitulo": "30 Desafios com Gabarito",
+        "categoria": "cristao",
+        "categoriaNome": "Cristão",
+        "preco": "R$ 9,90",
+        "imagem": "imagens/caca-palavras-biblico.webp",
+        "imagemAlt": "Páginas do Caça-Palavras Bíblico com desafios sobre Noé, Davi e o nascimento de Jesus",
+        "galeria": [
+          "imagens/caca-palavras-biblico-p5.webp",
+          "imagens/caca-palavras-biblico-p13.webp",
+          "imagens/caca-palavras-biblico-p23.webp",
+          "imagens/caca-palavras-biblico-p33.webp"
+        ],
+        "paginas": 38,
+        "mostrarNaInicial": true,
+        "textoCompra": "Comprar e baixar agora",
+        "textoSeguro": "Pix ou cartão pelo Mercado Pago · download na hora",
+        "descricao": "30 caça-palavras bíblicos em três níveis de dificuldade, cada um com um resumo da história e a referência para ler na Bíblia. Com gabarito e certificado.",
+        "descricaoDetalhada": "Da Criação ao Natal, cada desafio traz uma história da Bíblia contada em poucas linhas, a referência para ler junto e uma grade de letras grandes para encontrar as palavras. Os desafios começam fáceis (só na horizontal e vertical) e terminam com palavras escondidas em todas as direções — dá para usar com crianças a partir de 7 anos, na escola dominical, no culto infantil ou em família.",
+        "itens": [
+          "30 caça-palavras: 10 fáceis, 10 médios e 10 difíceis",
+          "Resumo de cada história e a referência para ler na Bíblia",
+          "Letras grandes, sem acentos, fáceis de enxergar",
+          "Quadro de progresso para colorir a cada desafio vencido",
+          "Gabarito completo de todos os desafios",
+          "Certificado de \"Caçador da Palavra\" para o final"
+        ],
+        "idealPara": [
+          "Escola bíblica dominical e ministério infantil",
+          "Devocional em família e momentos sem tela",
+          "Professores e catequistas que precisam de atividade pronta",
+          "Crianças a partir de 7 anos, adolescentes e adultos"
+        ],
+        "comoUsar": [
+          "Clique em \"Comprar e baixar agora\" e pague com Pix ou cartão.",
+          "Assim que o pagamento for aprovado, o botão de download aparece na tela.",
+          "Imprima em casa ou na gráfica, quantas vezes precisar."
+        ],
+        "observacoes": [
+          "Imprima só as páginas que for usar: cada desafio ocupa uma folha.",
+          "Produto digital: nenhum item físico será enviado.",
+          "Arquivo PDF tamanho A4 com 38 páginas. Abre no celular, no computador e na gráfica."
+        ],
+        "ordem": 30
+      }
+    },
+    "kit-amigo-secreto": {
+      "nome": "Kit Amigo Secreto",
+      "precoCentavos": 990,
+      "imagem": "https://lojadokiwi.com.br/imagens/kit-amigo-secreto.webp",
+      "paginas": 15,
+      "arquivos": [
+        {
+          "chave": "produtos/kit-amigo-secreto/kit-amigo-secreto-loja-do-kiwi-cc96e895ac.pdf",
+          "nome": "kit-amigo-secreto-loja-do-kiwi.pdf",
+          "local": "fabrica/saida/kit-amigo-secreto/kit-amigo-secreto-loja-do-kiwi.pdf",
+          "bytes": 502115
+        }
+      ],
+      "site": {
+        "id": "kit-amigo-secreto",
+        "checkout": "loja",
+        "nome": "Kit Amigo Secreto",
+        "subtitulo": "Sorteio, Lista de Desejos e Tags",
+        "categoria": "festas",
+        "categoriaNome": "Festas e Eventos",
+        "preco": "R$ 9,90",
+        "imagem": "imagens/kit-amigo-secreto.webp",
+        "imagemAlt": "Páginas do Kit Amigo Secreto: papeletas de sorteio, lista de desejos, tags de presente e plaquinhas para foto",
+        "galeria": [
+          "imagens/kit-amigo-secreto-p3.webp",
+          "imagens/kit-amigo-secreto-p5.webp",
+          "imagens/kit-amigo-secreto-p7.webp",
+          "imagens/kit-amigo-secreto-p9.webp",
+          "imagens/kit-amigo-secreto-p14.webp"
+        ],
+        "paginas": 15,
+        "mostrarNaInicial": true,
+        "textoCompra": "Comprar e baixar agora",
+        "textoSeguro": "Pix ou cartão pelo Mercado Pago · download na hora",
+        "descricao": "Kit completo para organizar o amigo secreto da família, da escola ou do trabalho: regras, papeletas de sorteio, lista de desejos, tags de presente, Amigo Doce e plaquinhas divertidas para fotos.",
+        "descricaoDetalhada": "Organize o amigo secreto sem dor de cabeça. O kit tem o cartaz de regras para preencher (valor, data e local), a lista de participantes, 24 papeletas de sorteio, fichas de lista de desejos para ninguém errar o presente, tags \"Para/De\", cartões de pistas para a revelação, o calendário do Amigo Doce e plaquinhas engraçadas que rendem as melhores fotos da festa. É só imprimir, recortar e brincar.",
+        "itens": [
+          "Cartaz de regras para preencher (valor, data, local e organizador)",
+          "Lista de participantes com controle de quem já entregou",
+          "24 papeletas de sorteio para recortar e dobrar",
+          "Fichas de lista de desejos (tamanho, cor favorita, gostos)",
+          "24 tags de presente \"Para / De: seu amigo secreto\"",
+          "Cartões de pistas para a revelação",
+          "Calendário e etiquetas do Amigo Doce (5 dias)",
+          "6 ideias de brincadeiras para a hora da revelação",
+          "4 plaquinhas divertidas para fotos"
+        ],
+        "idealPara": [
+          "Confraternização da firma e do escritório",
+          "Amigo secreto da família no Natal",
+          "Turmas da escola, igrejas e grupos de amigos",
+          "Quem organiza e quer tudo pronto em minutos"
+        ],
+        "comoUsar": [
+          "Clique em \"Comprar e baixar agora\" e pague com Pix ou cartão.",
+          "Assim que o pagamento for aprovado, o botão de download aparece na tela.",
+          "Imprima em casa ou na gráfica, quantas vezes precisar."
+        ],
+        "observacoes": [
+          "Imprima as papeletas e as tags quantas vezes precisar.",
+          "Produto digital: nenhum item físico será enviado.",
+          "Arquivo PDF tamanho A4 com 15 páginas. Abre no celular, no computador e na gráfica."
+        ],
+        "ordem": 10
+      }
+    },
+    "kit-atividades-natal": {
+      "nome": "Kit de Atividades de Natal",
+      "precoCentavos": 1290,
+      "imagem": "https://lojadokiwi.com.br/imagens/kit-atividades-natal.webp",
+      "paginas": 24,
+      "arquivos": [
+        {
+          "chave": "produtos/kit-atividades-natal/kit-atividades-natal-loja-do-kiwi-3ec432e9e7.pdf",
+          "nome": "kit-atividades-natal-loja-do-kiwi.pdf",
+          "local": "fabrica/saida/kit-atividades-natal/kit-atividades-natal-loja-do-kiwi.pdf",
+          "bytes": 974528
+        }
+      ],
+      "site": {
+        "id": "kit-atividades-natal",
+        "checkout": "loja",
+        "nome": "Kit de Atividades de Natal",
+        "subtitulo": "24 Páginas para Crianças de 4 a 9 Anos",
+        "categoria": "educacao",
+        "categoriaNome": "Educação",
+        "preco": "R$ 12,90",
+        "imagem": "imagens/kit-atividades-natal.webp",
+        "imagemAlt": "Páginas do Kit de Atividades de Natal: labirinto, pinte pelo código, jogo dos 7 erros e bingo",
+        "galeria": [
+          "imagens/kit-atividades-natal-p5.webp",
+          "imagens/kit-atividades-natal-p11.webp",
+          "imagens/kit-atividades-natal-p13.webp",
+          "imagens/kit-atividades-natal-p14.webp",
+          "imagens/kit-atividades-natal-p16.webp"
+        ],
+        "paginas": 24,
+        "mostrarNaInicial": true,
+        "textoCompra": "Comprar e baixar agora",
+        "textoSeguro": "Pix ou cartão pelo Mercado Pago · download na hora",
+        "descricao": "Kit com 24 páginas de atividades de Natal para imprimir: caça-palavras, labirintos, contas, pinte pelo código, jogo dos 7 erros, jogo da memória, bingo, enfeites para colorir e carta ao Papai Noel.",
+        "descricaoDetalhada": "Diversão sem tela para as férias e para a última semana de aula. São atividades de vários níveis, que trabalham leitura, contagem, raciocínio lógico, atenção e coordenação motora, além de jogos para brincar em família: jogo da memória com 12 pares e bingo de Natal com 6 cartelas. Tudo com gabarito para o adulto conferir.",
+        "itens": [
+          "Carta ao Papai Noel e página de desenho",
+          "2 caça-palavras (fácil e médio) e 2 labirintos",
+          "Ligue às sombras, conte e escreva, continhas e sequências",
+          "Pinte pelo código (pixel art) e desenho de simetria",
+          "Jogo dos 7 erros",
+          "Jogo da memória com 12 pares para recortar",
+          "Bingo de Natal: 6 cartelas e fichas de sorteio",
+          "Enfeites para colorir, recortar e pendurar na árvore",
+          "Certificado de Ajudante Oficial do Papai Noel e gabarito"
+        ],
+        "idealPara": [
+          "Crianças de 4 a 9 anos em casa ou nas férias",
+          "Professores de educação infantil e fundamental I",
+          "Festas de fim de ano e cantinho das crianças na ceia",
+          "Viagens e dias de chuva, sem tela"
+        ],
+        "comoUsar": [
+          "Clique em \"Comprar e baixar agora\" e pague com Pix ou cartão.",
+          "Assim que o pagamento for aprovado, o botão de download aparece na tela.",
+          "Imprima em casa ou na gráfica, quantas vezes precisar."
+        ],
+        "observacoes": [
+          "Para o jogo da memória e o bingo, prefira papel mais grosso (180 g).",
+          "Produto digital: nenhum item físico será enviado.",
+          "Arquivo PDF tamanho A4 com 24 páginas. Abre no celular, no computador e na gráfica."
+        ],
+        "ordem": 20
+      }
+    },
+    "planner-2027": {
+      "nome": "Planner 2027",
+      "precoCentavos": 1690,
+      "imagem": "https://lojadokiwi.com.br/imagens/planner-2027.webp",
+      "paginas": 37,
+      "arquivos": [
+        {
+          "chave": "produtos/planner-2027/planner-2027-loja-do-kiwi-76282aeeb3.pdf",
+          "nome": "planner-2027-loja-do-kiwi.pdf",
+          "local": "fabrica/saida/planner-2027/planner-2027-loja-do-kiwi.pdf",
+          "bytes": 420683
+        }
+      ],
+      "site": {
+        "id": "planner-2027",
+        "checkout": "loja",
+        "nome": "Planner 2027",
+        "subtitulo": "Calendário, Metas e Finanças",
+        "categoria": "organizacao",
+        "categoriaNome": "Organização",
+        "preco": "R$ 16,90",
+        "imagem": "imagens/planner-2027.webp",
+        "imagemAlt": "Páginas do Planner 2027: visão do ano, calendário mensal com feriados e controle financeiro",
+        "galeria": [
+          "imagens/planner-2027-p2.webp",
+          "imagens/planner-2027-p6.webp",
+          "imagens/planner-2027-p7.webp",
+          "imagens/planner-2027-p32.webp",
+          "imagens/planner-2027-p34.webp"
+        ],
+        "paginas": 37,
+        "mostrarNaInicial": true,
+        "textoCompra": "Comprar e baixar agora",
+        "textoSeguro": "Pix ou cartão pelo Mercado Pago · download na hora",
+        "descricao": "Planner 2027 completo para imprimir: calendário anual e mensal com os feriados do Brasil, metas, roda da vida, planejamento semanal e diário, controle financeiro e rastreador de hábitos.",
+        "descricaoDetalhada": "Comece 2027 com a vida organizada. São 12 meses com calendário e página de planejamento (metas, contas a pagar, hábitos e aniversários), visão do ano, todos os feriados nacionais e datas comemorativas de 2027, roda da vida e metas por área, além de páginas sem data para imprimir quantas vezes quiser: semana, dia, controle financeiro, orçamento anual e listas. Design limpo, que economiza tinta e fica lindo encadernado ou em fichário.",
+        "itens": [
+          "Visão do ano 2027 e lista de feriados e datas comemorativas",
+          "12 calendários mensais com feriados marcados",
+          "12 páginas de planejamento mensal (metas, contas, hábitos)",
+          "Metas do ano por área da vida e roda da vida",
+          "Planejamento semanal e diário (sem data, reutilizáveis)",
+          "Controle financeiro mensal e orçamento anual",
+          "Aniversários do ano, listas de leitura e filmes, tarefas e anotações"
+        ],
+        "idealPara": [
+          "Quem quer começar 2027 com metas claras",
+          "Organizar contas, gastos e rotina da casa",
+          "Estudantes, professores e profissionais autônomos",
+          "Encadernar, usar em fichário ou imprimir só as páginas que precisar"
+        ],
+        "comoUsar": [
+          "Clique em \"Comprar e baixar agora\" e pague com Pix ou cartão.",
+          "Assim que o pagamento for aprovado, o botão de download aparece na tela.",
+          "Imprima em casa ou na gráfica, quantas vezes precisar."
+        ],
+        "observacoes": [
+          "Tamanho A4: também pode ser impresso em A5 (duas páginas por folha) nas opções da impressora.",
+          "Feriados estaduais e municipais não estão incluídos: há espaço para anotá-los.",
+          "Produto digital: nenhum item físico será enviado.",
+          "Arquivo PDF tamanho A4 com 37 páginas. Abre no celular, no computador e na gráfica."
+        ],
+        "ordem": 15
+      }
+    }
+  },
+  "atualizadoEm": "2026-11-24T18:02:18.706Z"
+}

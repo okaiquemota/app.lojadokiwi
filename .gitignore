@@ -28,3 +28,10 @@ originais/
 node_modules/
 package-lock.json
 npm-debug.log*
+
+# PDFs fabricados: são o que se vende, ficam só no cofre (R2), nunca no site público
+fabrica/saida/
+
+# Configuração local do Worker (wrangler)
+checkout/.wrangler/
+checkout/.dev.vars

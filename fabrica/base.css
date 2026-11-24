@@ -1,0 +1,84 @@
+/* Estilo comum a todos os PDFs da fábrica: página A4, margens seguras para
+   impressora caseira (8 mm) e a identidade da Loja do Kiwi. */
+
+@page { size: A4; margin: 0; }
+
+:root {
+  --kiwi: #72a325;
+  --kiwi-escuro: #4d7215;
+  --kiwi-claro: #eef7e1;
+  --tinta: #2b2b2b;
+  --cinza: #6b6b6b;
+  --linha: #d9d9d9;
+  --papel: #ffffff;
+  --titulo: 'Fredoka', 'Nunito', sans-serif;
+  --texto: 'Nunito', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: var(--texto);
+  color: var(--tinta);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.pagina {
+  width: 210mm;
+  height: 297mm;
+  position: relative;
+  overflow: hidden;
+  background: var(--papel);
+  page-break-after: always;
+  break-after: page;
+  padding: 16mm 15mm 18mm;
+}
+
+.pagina:last-child { page-break-after: auto; break-after: auto; }
+
+/* Rodapé discreto com a marca e a licença de uso. */
+.rodape-loja {
+  position: absolute;
+  left: 15mm;
+  right: 15mm;
+  bottom: 8mm;
+  display: flex;
+  justify-content: space-between;
+  font: 600 7.5pt var(--texto);
+  color: #9a9a9a;
+  letter-spacing: 0.02em;
+}
+
+.rodape-loja .kiwi { color: var(--kiwi-escuro); }
+
+h1, h2, h3 { font-family: var(--titulo); font-weight: 600; line-height: 1.1; }
+
+.cabecalho-atividade {
+  display: flex;
+  align-items: center;
+  gap: 5mm;
+  margin-bottom: 6mm;
+}
+
+.cabecalho-atividade h2 { font-size: 24pt; }
+.cabecalho-atividade p { font-size: 11pt; color: var(--cinza); }
+
+.linha-nome {
+  display: flex;
+  gap: 6mm;
+  font: 700 10pt var(--texto);
+  color: var(--cinza);
+  margin-bottom: 6mm;
+}
+
+.linha-nome span { flex: 1; border-bottom: 1.2px solid #bdbdbd; padding-bottom: 1mm; }
+.linha-nome span.curta { flex: 0 0 38mm; }
+
+/* Linhas de corte para cartões e etiquetas. */
+.corte { border: 1px dashed #b5b5b5; }
+
+.tesoura {
+  font: 600 8pt var(--texto);
+  color: #9a9a9a;
+}
