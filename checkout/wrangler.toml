@@ -1,0 +1,27 @@
+# Checkout da Loja do Kiwi (Cloudflare Worker).
+# Publicar:  cd checkout && npx wrangler deploy
+# Segredos (uma vez):  npx wrangler secret put MP_ACCESS_TOKEN
+name = "lojadokiwi-checkout"
+account_id = "c6c66853f479957866f330e2408822db"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[vars]
+SITE_URL = "https://lojadokiwi.com.br"
+ORIGENS_PERMITIDAS = "https://lojadokiwi.com.br,https://www.lojadokiwi.com.br,http://localhost:8000"
+LIMITE_DOWNLOADS = "30"
+
+# PDFs e catalogo.json (privado: só o Worker lê)
+[[r2_buckets]]
+binding = "ARQUIVOS"
+bucket_name = "lojadokiwi-produtos"
+
+# Pedidos
+[[d1_databases]]
+binding = "DB"
+database_name = "lojadokiwi"
+database_id = "3090a5c5-f6d9-422b-ac37-456c22a12b4f"
+
+[observability]
+enabled = true
