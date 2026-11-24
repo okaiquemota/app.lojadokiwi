@@ -10,3 +10,6 @@ Disallow: /checkout/
 Disallow: /pedido/
 
 Sitemap: https://lojadokiwi.com.br/sitemap.xml
+
+# Imagens de divulgação para redes sociais
+Disallow: /divulgacao/

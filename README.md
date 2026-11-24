@@ -55,6 +55,7 @@ style.css             estilos de todo o site
 imagens/              imagens de 800px, usadas na página de detalhe
 imagens/thumbs/       miniaturas de 400px, usadas nos cards da vitrine
 ferramentas/          scripts de apoio (ver abaixo)
+divulgacao/           posts, stories e legendas prontos para as redes sociais
 fabrica/              fábrica de produtos próprios: gera PDF, capa, galeria e banner
 checkout/             checkout próprio (Cloudflare Worker + Mercado Pago)
 
@@ -92,6 +93,14 @@ Para um produto novo, copie a pasta de um produto parecido e mude `info.id` para
 da pasta. Ilustrações: use `icone('nome')` de `fabrica/lib/icones.mjs` (Fluent Emoji da
 Microsoft, licença MIT — o crédito já vai no PDF). Não use imagens de banco sem licença
 comercial. O banner da página inicial é gerado por `node fabrica/banner.mjs`.
+
+**Divulgação:** `node fabrica/divulgacao.mjs <id>` cria em `divulgacao/<id>/` o post do
+feed (1080×1350), o story (1080×1920) e a legenda com hashtags, prontos para Instagram,
+WhatsApp e Pinterest.
+
+**Produto novo toda semana:** uma tarefa agendada no Claude Code cria um produto da
+época a cada semana, publica o PDF no cofre e abre um pull request com o produto e as
+imagens de divulgação. O produto só vai ao ar quando o pull request é mesclado.
 
 Produtos no ar: Kit Amigo Secreto, Kit de Atividades de Natal, Planner 2027 e
 Caça-Palavras Bíblico.
