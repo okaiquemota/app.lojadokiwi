@@ -1,8 +1,15 @@
 # Loja do Kiwi
 
 Loja de materiais digitais para imprimir — kits de atividades, materiais pedagógicos,
-cursos e lembrancinhas em PDF. O pagamento e a entrega dos arquivos são feitos pela
-Kiwify; este repositório é a vitrine.
+cursos e lembrancinhas em PDF.
+
+A loja vende de dois jeitos:
+
+- **Produtos próprios** — criados pela fábrica deste repositório (`fabrica/`) e vendidos
+  pelo checkout próprio (`checkout/`): o cliente paga com Pix ou cartão no Mercado Pago e
+  baixa o PDF na hora, sem ninguém precisar estar online.
+- **Produtos parceiros** — cursos e materiais de terceiros, com pagamento e entrega pela
+  Kiwify (links de afiliado no `produtos.js`).
 
 **No ar:** <https://lojadokiwi.com.br>
 
@@ -14,10 +21,20 @@ São páginas HTML estáticas publicadas pelo **GitHub Pages**. Não há servido
 dados nem etapa de compilação: o que está na branch `main` é exatamente o que vai ao ar,
 poucos segundos depois do envio.
 
-O catálogo inteiro mora em um único arquivo, o **`produtos.js`**. O `script.js` lê esse
-arquivo e monta a vitrine, as categorias, a busca e a página de cada produto no
-navegador. Para mexer na loja — preço, produto novo, texto — o arquivo a editar é quase
-sempre o `produtos.js`.
+O catálogo mora em dois arquivos: **`produtos.js`** (produtos parceiros, editado à mão) e
+**`produtos-proprios.js`** (produtos próprios, gerado pela fábrica — não edite à mão). O
+`script.js` lê os dois e monta a vitrine, as categorias, a busca e a página de cada
+produto no navegador.
+
+```
+cliente ──> lojadokiwi.com.br (GitHub Pages) ──"Comprar"──> checkout (Cloudflare Worker)
+                                                              │  cria o pagamento
+                                                              ▼
+            /pedido/  <──volta──  Mercado Pago (Pix ou cartão)
+               │
+               └──> checkout confere o pagamento no Mercado Pago e libera o PDF,
+                    guardado num cofre privado (Cloudflare R2). Pedidos ficam no D1.
+```
 
 ## Estrutura
 
@@ -28,13 +45,19 @@ duvidas/              perguntas frequentes e canais de atendimento
 termos-de-uso/        termos de uso e política de reembolso
 404.html              página de endereço não encontrado
 
-produtos.js           CATÁLOGO: todos os produtos e categorias
-script.js             monta as vitrines, busca, menu, carrossel e acordeão
+pedido/               "Minhas compras": confirma o pagamento e entrega o download
+
+produtos.js           CATÁLOGO dos produtos parceiros e das categorias
+produtos-proprios.js  CATÁLOGO dos produtos próprios (gerado pela fábrica)
+script.js             monta as vitrines, busca, menu, carrossel, acordeão e compra
 style.css             estilos de todo o site
 
 imagens/              imagens de 800px, usadas na página de detalhe
 imagens/thumbs/       miniaturas de 400px, usadas nos cards da vitrine
 ferramentas/          scripts de apoio (ver abaixo)
+divulgacao/           posts, stories e legendas prontos para as redes sociais
+fabrica/              fábrica de produtos próprios: gera PDF, capa, galeria e banner
+checkout/             checkout próprio (Cloudflare Worker + Mercado Pago)
 
 CNAME                 domínio próprio, lido pelo GitHub Pages
 robots.txt            libera a indexação e aponta o sitemap
@@ -43,9 +66,91 @@ sitemap.xml           lista de páginas entregue ao Google
 
 ---
 
+## Produtos próprios: a fábrica
+
+Cada produto próprio é um arquivo `fabrica/produtos/<id>/produto.mjs` com o texto da
+vitrine (`info`), o estilo (`css`) e as páginas do PDF (`paginas()`), escritas em HTML.
+A fábrica transforma isso em:
+
+- o **PDF A4** que o cliente compra, em `fabrica/saida/` (fora do Git: é o que se vende)
+- a **capa** da vitrine, com as páginas reais em leque, e a **galeria** "veja por dentro"
+- os catálogos: `fabrica/catalogo.json` (lido pelo checkout) e `produtos-proprios.js` (lido pelo site)
+
+Para criar ou atualizar produtos (precisa de Node 22 e do Chromium do Playwright):
+
+```bash
+cd fabrica && npm install && cd ..
+node fabrica/construir.mjs                 # todos os produtos
+node fabrica/construir.mjs planner-2027    # só um
+CLOUDFLARE_API_TOKEN=... node fabrica/publicar.mjs   # envia os PDFs ao cofre
+python3 ferramentas/verificar-catalogo.py
+```
+
+Depois é só enviar as mudanças (imagens e `produtos-proprios.js`) para a branch `main`.
+O PDF novo é vendido assim que o `publicar.mjs` termina; o site atualiza com o envio.
+
+Para um produto novo, copie a pasta de um produto parecido e mude `info.id` para o nome
+da pasta. Ilustrações: use `icone('nome')` de `fabrica/lib/icones.mjs` (Fluent Emoji da
+Microsoft, licença MIT — o crédito já vai no PDF). Não use imagens de banco sem licença
+comercial. O banner da página inicial é gerado por `node fabrica/banner.mjs`.
+
+**Divulgação:** `node fabrica/divulgacao.mjs <id>` cria em `divulgacao/<id>/` o post do
+feed (1080×1350), o story (1080×1920) e a legenda com hashtags, prontos para Instagram,
+WhatsApp e Pinterest.
+
+**Produto novo toda semana:** uma tarefa agendada no Claude Code cria um produto da
+época a cada semana, publica o PDF no cofre e abre um pull request com o produto e as
+imagens de divulgação. O produto só vai ao ar quando o pull request é mesclado.
+
+Produtos no ar: Kit Amigo Secreto, Kit de Atividades de Natal, Planner 2027 e
+Caça-Palavras Bíblico.
+
+## Checkout próprio (Mercado Pago + Cloudflare)
+
+O `checkout/` é um Cloudflare Worker publicado em
+<https://lojadokiwi-checkout.okaiquemota.workers.dev>. Ele usa:
+
+| Recurso | Nome | Para quê |
+|---|---|---|
+| R2 (cofre) | `lojadokiwi-produtos` | PDFs e `catalogo.json`. Privado: só o Worker lê |
+| D1 (banco) | `lojadokiwi` | pedidos (`checkout/schema.sql`) |
+| Segredo | `MP_ACCESS_TOKEN` | Access Token de **produção** do Mercado Pago |
+| Segredo | `CHAVE_PAINEL` | senha do painel de vendas |
+| Segredo (opcional) | `MP_WEBHOOK_SECRET` | confere a assinatura dos avisos do Mercado Pago |
+
+O preço cobrado vem sempre do `catalogo.json` do cofre, nunca do navegador. Pagamento com
+valor menor que o do produto não libera o download, e um estorno ou chargeback bloqueia
+o link. Cada pedido pode ser baixado até 30 vezes.
+
+**Configurar o Mercado Pago (uma vez):** no Mercado Pago, abra *Suas integrações →
+Credenciais de produção* e copie o *Access Token*. No painel da Cloudflare, abra *Workers
+& Pages → lojadokiwi-checkout → Settings → Variables and Secrets → Add*, escolha o tipo
+*Secret*, nome `MP_ACCESS_TOKEN`, cole o token e salve. Ou, pelo terminal:
+
+```bash
+cd checkout && npx wrangler secret put MP_ACCESS_TOKEN
+```
+
+**Ver as vendas:** `https://lojadokiwi-checkout.okaiquemota.workers.dev/painel?chave=<CHAVE_PAINEL>`
+mostra vendas do dia, da semana e do mês, por produto, e os últimos pedidos.
+
+**Testar e publicar o Worker:**
+
+```bash
+node checkout/teste-local.mjs      # banco e cofre simulados; precisa de MP_ACCESS_TOKEN de teste
+cd checkout && npx wrangler deploy # publica (os segredos são mantidos)
+```
+
+**Cliente perdeu o link?** Em *Minhas Compras* (`/pedido/`) ele recupera o pedido com o
+número do pagamento (vem no e-mail do Mercado Pago) e o e-mail da compra.
+
+---
+
 ## Tarefas do dia a dia
 
-### Adicionar um produto
+### Adicionar um produto parceiro (Kiwify)
+
+Produto próprio é feito pela fábrica (veja acima). Para um produto parceiro:
 
 **1. Prepare a imagem.** O script gera os dois tamanhos que a loja usa:
 
@@ -197,8 +302,12 @@ um ter a própria entrada no Google.
 
 - **Endereço próprio por produto** no Google (gerar uma pasta por produto a partir do
   `produtos.js`, de preferência com automação no envio).
-- **Ferramenta de medição** — o site não tem Google Analytics nem pixel, então não há
-  como saber quantas visitas viram venda.
+- **Ferramenta de medição** — o site não tem Google Analytics nem pixel. O painel do
+  checkout já mostra o funil dos produtos próprios (quem clicou em comprar e quem pagou),
+  mas não o número de visitas.
+- **E-mail com o link de download** — hoje o cliente baixa na página do pedido e recupera
+  pelo número do pagamento. Mandar o link por e-mail exige um serviço de envio (ex.: Resend)
+  e o domínio configurado nele.
 - **Quatro produtos em rascunho** aguardando link de compra e imagem.
 
 ---

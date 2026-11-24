@@ -1,0 +1,9 @@
+{
+  "name": "lojadokiwi-checkout",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "testar": "node teste-local.mjs",
+    "publicar": "wrangler deploy"
+  }
+}

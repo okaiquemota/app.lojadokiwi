@@ -1,7 +1,15 @@
 User-agent: *
 Allow: /
 
-# Scripts de manutenção: não têm conteúdo para buscador
+# Scripts de manutenção e fábrica de produtos: não têm conteúdo para buscador
 Disallow: /ferramentas/
+Disallow: /fabrica/
+Disallow: /checkout/
+
+# Página de pedido: é pessoal de cada cliente
+Disallow: /pedido/
 
 Sitemap: https://lojadokiwi.com.br/sitemap.xml
+
+# Imagens de divulgação para redes sociais
+Disallow: /divulgacao/

@@ -37,6 +37,8 @@ def carregar():
       const fs = require('fs');
       global.window = {};
       eval(fs.readFileSync(process.argv[1], 'utf8'));
+      // produtos próprios (gerados pela fábrica) entram na frente, como no site
+      if (fs.existsSync(process.argv[2])) eval(fs.readFileSync(process.argv[2], 'utf8'));
       process.stdout.write(JSON.stringify({
         produtos: window.produtosLojadoKiwi,
         categorias: window.categoriasLojadoKiwi,
@@ -44,7 +46,8 @@ def carregar():
     """
     try:
         saida = subprocess.run(
-            ["node", "-e", script, os.path.join(RAIZ, "produtos.js")],
+            ["node", "-e", script, os.path.join(RAIZ, "produtos.js"),
+             os.path.join(RAIZ, "produtos-proprios.js")],
             capture_output=True, text=True, check=True).stdout
     except FileNotFoundError:
         sys.exit("Node.js não encontrado — é necessário para ler o produtos.js.")
@@ -68,6 +71,9 @@ def main():
 
     erros, avisos = [], []
     apelidos = {}
+    catalogo_vendas = os.path.join(RAIZ, "fabrica", "catalogo.json")
+    vendaveis = set(json.load(open(catalogo_vendas, encoding="utf-8"))["produtos"]) \
+        if os.path.exists(catalogo_vendas) else set()
 
     for i, p in enumerate(produtos, 1):
         nome = p.get("nome", f"produto #{i}")
@@ -90,7 +96,14 @@ def main():
                           f'não bate com "{categorias[cat]["nome"]}"')
 
         link = str(p.get("linkCompra") or "")
-        if any(x in link.upper() for x in EXEMPLOS) or not link:
+        if p.get("checkout") == "loja":
+            # vendido pelo checkout próprio: precisa estar no catálogo de vendas da fábrica
+            if p.get("id") not in vendaveis:
+                registrar(f"{onde}: produto próprio fora de fabrica/catalogo.json — rode a fábrica")
+            for g in p.get("galeria") or []:
+                if not os.path.exists(os.path.join(RAIZ, g)):
+                    registrar(f"{onde}: a imagem da galeria {g} não existe")
+        elif any(x in link.upper() for x in EXEMPLOS) or not link:
             registrar(f"{onde}: link de compra ainda é texto de exemplo ({link or 'vazio'})")
         elif not link.startswith("http"):
             registrar(f"{onde}: link de compra não é um endereço válido ({link})")

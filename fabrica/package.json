@@ -1,0 +1,14 @@
+{
+  "name": "lojadokiwi-fabrica",
+  "private": true,
+  "type": "module",
+  "description": "Fábrica de produtos digitais da Loja do Kiwi",
+  "scripts": {
+    "construir": "node construir.mjs",
+    "publicar": "node publicar.mjs"
+  },
+  "dependencies": {
+    "@iconify-json/fluent-emoji-flat": "1.2.6",
+    "@iconify-json/fluent-emoji-high-contrast": "*"
+  }
+}

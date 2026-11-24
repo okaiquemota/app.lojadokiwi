@@ -1,3 +1,24 @@
+// --- Checkout próprio (Cloudflare Worker + Mercado Pago) ---
+// Produtos com `checkout: 'loja'` (gerados pela fábrica em produtos-proprios.js)
+// são vendidos aqui mesmo: Pix ou cartão e download automático na página /pedido/.
+const CHECKOUT_URL = 'https://lojadokiwi-checkout.okaiquemota.workers.dev';
+const CHAVE_PEDIDOS = 'kiwi-pedidos';
+
+// O navegador lembra os pedidos feitos neste aparelho (só o código e o nome:
+// quem baixa é o checkout, que confere o pagamento no Mercado Pago).
+const lerPedidos = () => {
+  try { return JSON.parse(localStorage.getItem(CHAVE_PEDIDOS)) || []; } catch (e) { return []; }
+};
+const salvarPedido = (pedido) => {
+  try {
+    const outros = lerPedidos().filter(p => p.ref !== pedido.ref);
+    const anterior = lerPedidos().find(p => p.ref === pedido.ref) || {};
+    localStorage.setItem(CHAVE_PEDIDOS, JSON.stringify([{ ...anterior, ...pedido }, ...outros].slice(0, 30)));
+  } catch (e) { /* navegação privada: segue sem lembrar */ }
+};
+
+const escaparHtml = (texto) => String(texto ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 // --- Lógica Auxiliar: Criador de Slugs e Formatador de Caminho Absoluto ---
 const criarSlug = (produto) => {
   return String(produto.slug || `${produto.nome}-${produto.subtitulo}`)
@@ -47,6 +68,7 @@ const montarCard = (produto, { classeExtra = '', prioridade = false } = {}) => {
       <div class="info-kiwi">
         <span class="preco-kiwi">R$ ${reais}<span class="centavos-kiwi">${centavos}</span></span>
         <span class="titulo-kiwi">${produto.nome} - ${produto.subtitulo}</span>
+        ${produto.checkout === 'loja' ? '<span class="selo-card">✓ Download na hora</span>' : ''}
       </div>
     </a>`;
 };
@@ -243,6 +265,31 @@ const aplicarMetaDoProduto = (produto) => {
 
   const canonica = document.head.querySelector('link[rel="canonical"]');
   if (canonica) canonica.href = url;
+
+  let ld = document.getElementById('ld-produto');
+  if (!produto) { if (ld) ld.remove(); return; }
+  if (!ld) {
+    ld = document.createElement('script');
+    ld.type = 'application/ld+json';
+    ld.id = 'ld-produto';
+    document.head.appendChild(ld);
+  }
+  ld.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: produto.nome,
+    description: produto.descricao,
+    image: imagem,
+    url,
+    brand: { '@type': 'Brand', name: 'Loja do Kiwi' },
+    offers: {
+      '@type': 'Offer',
+      price: String(produto.preco).replace(/[^\d,]/g, '').replace(',', '.'),
+      priceCurrency: 'BRL',
+      availability: 'https://schema.org/InStock',
+      url,
+    },
+  });
 };
 
 // --- Lógica da Página de Produtos (Vitrine e Detalhes Dinâmicos SPA) ---
@@ -330,7 +377,16 @@ if (vitrine) {
             <div class="detalhe-hero">
               <div class="detalhe-galeria">
                 <img src="${fixPath(produto.imagem)}" alt="${produto.imagemAlt || produto.nome}"
-                     width="800" height="800" decoding="async">
+                     width="800" height="800" decoding="async" id="imagem-principal">
+                ${produto.galeria && produto.galeria.length ? `
+                  <div class="galeria-miniaturas" aria-label="Veja as páginas por dentro">
+                    ${[produto.imagem, ...produto.galeria].map((img, i) => `
+                      <button type="button" class="miniatura ${i === 0 ? 'ativa' : ''}" data-imagem="${fixPath(img)}"
+                              aria-label="${i === 0 ? 'Capa' : `Página de dentro ${i}`}">
+                        <img src="${caminhoThumb(img)}" alt="" width="80" height="${i === 0 ? 80 : 113}" loading="lazy" decoding="async">
+                      </button>`).join('')}
+                  </div>
+                  <p class="galeria-legenda">Veja as páginas por dentro</p>` : ''}
               </div>
               <div class="detalhe-resumo">
                 <span class="detalhe-categoria-tag">${produto.categoriaNome}</span>
@@ -340,9 +396,19 @@ if (vitrine) {
                 <div class="detalhe-preco-box">
                   <span class="detalhe-preco-tag">${produto.preco}</span>
                 </div>
-                <a href="${produto.linkCompra || '#'}" target="_blank" rel="noopener noreferrer" class="btn-checkout-kiwify">
-                  ${produto.textoCompra || 'Adquirir Material'}
-                </a>
+                ${produto.checkout === 'loja' ? `
+                  <button type="button" class="btn-checkout-kiwify btn-comprar-loja" data-produto="${produto.id}">
+                    ${produto.textoCompra || 'Comprar agora'}
+                  </button>
+                  <p class="aviso-compra" role="status" aria-live="polite"></p>
+                  <ul class="formas-pagamento" aria-label="Formas de pagamento">
+                    <li>Pix</li><li>Cartão de crédito</li><li>PDF de ${produto.paginas} páginas</li>
+                  </ul>
+                ` : `
+                  <a href="${produto.linkCompra || '#'}" target="_blank" rel="noopener noreferrer" class="btn-checkout-kiwify">
+                    ${produto.textoCompra || 'Adquirir Material'}
+                  </a>
+                `}
                 <p class="detalhe-seguro-tag">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                   ${produto.textoSeguro || 'Pagamento 100% seguro'}
@@ -477,7 +543,45 @@ if (vitrine) {
     });
   }
 
+  const comprar = async (botao) => {
+    const aviso = botao.parentElement.querySelector('.aviso-compra');
+    const produto = catalogo().find(p => p.id === botao.dataset.produto);
+    const textoOriginal = botao.textContent;
+    botao.disabled = true;
+    botao.textContent = 'Abrindo o pagamento seguro…';
+    if (aviso) aviso.textContent = '';
+    try {
+      const resposta = await fetch(`${CHECKOUT_URL}/api/checkout`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ produto: botao.dataset.produto }),
+      });
+      const dados = await resposta.json().catch(() => ({}));
+      if (!resposta.ok || !dados.url) throw new Error(dados.erro || 'Não foi possível abrir o pagamento.');
+      salvarPedido({ ref: dados.ref, produto: produto.id, nome: produto.nome, url: dados.url, criadoEm: Date.now(), status: 'criado' });
+      window.location.href = dados.url;
+    } catch (erro) {
+      botao.disabled = false;
+      botao.textContent = textoOriginal;
+      if (aviso) {
+        aviso.innerHTML = `${escaparHtml(erro.message)} Tente de novo ou <a href="https://wa.me/5516982157266?text=${encodeURIComponent(`Oi! Quero comprar: ${produto.nome}`)}" target="_blank" rel="noopener noreferrer">compre pelo WhatsApp</a>.`;
+      }
+    }
+  };
+
   vitrine.addEventListener('click', (e) => {
+    const botaoCompra = e.target.closest('.btn-comprar-loja');
+    if (botaoCompra) {
+      comprar(botaoCompra);
+      return;
+    }
+    const miniatura = e.target.closest('.miniatura');
+    if (miniatura) {
+      const principal = document.getElementById('imagem-principal');
+      if (principal) principal.src = miniatura.dataset.imagem;
+      vitrine.querySelectorAll('.miniatura').forEach(m => m.classList.toggle('ativa', m === miniatura));
+      return;
+    }
     const voltar = e.target.closest('.btn-voltar-catalogo');
     if (voltar) {
       e.preventDefault();
@@ -611,3 +715,167 @@ window.addEventListener('resize', () => {
     painel.style.maxHeight = painel.scrollHeight + 'px';
   });
 });
+
+// --- Página do pedido (/pedido/): confirma o pagamento e entrega o PDF ---
+const areaPedido = document.getElementById('area-pedido');
+
+if (areaPedido) {
+  const params = new URLSearchParams(window.location.search);
+  const refAtual = params.get('ref');
+  const WHATSAPP = 'https://wa.me/5516982157266';
+  const formatarBytes = (n) => n > 1048576 ? `${(n / 1048576).toFixed(1).replace('.', ',')} MB` : `${Math.round(n / 1024)} KB`;
+  const linkProduto = (id) => {
+    const produto = catalogo().find(p => p.id === id);
+    return produto ? `/produtos/?produto=${criarSlug(produto)}` : '/produtos/';
+  };
+
+  // O Mercado Pago devolve vários parâmetros; fica só o código, que é o link para guardar.
+  if (refAtual && params.toString() !== `ref=${refAtual}`) {
+    try { history.replaceState({}, '', `/pedido/?ref=${refAtual}`); } catch (e) { /* segue */ }
+  }
+
+  const desenhar = (html) => { areaPedido.innerHTML = html; };
+  let tentativas = 0;
+  let relogio;
+
+  const estados = {
+    carregando: () => `
+      <div class="pedido-icone carregando" aria-hidden="true"></div>
+      <h1>Conferindo o seu pedido…</h1>
+      <p>Só um instante.</p>`,
+
+    aprovado: (d) => `
+      <div class="pedido-icone ok" aria-hidden="true">✓</div>
+      <h1>Pagamento aprovado!</h1>
+      <p>Obrigado pela compra. Seu arquivo está pronto para baixar:</p>
+      <div class="pedido-produto">
+        ${d.produto.imagem ? `<img src="${escaparHtml(d.produto.imagem.replace('https://lojadokiwi.com.br', ''))}" alt="" width="88" height="88">` : ''}
+        <div>
+          <strong>${escaparHtml(d.produto.nome)}</strong>
+          ${d.arquivos.map(a => `
+            <a class="btn-download" href="${escaparHtml(a.url)}" download>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Baixar PDF <small>${a.paginas} páginas · ${formatarBytes(a.bytes)}</small>
+            </a>`).join('')}
+        </div>
+      </div>
+      <ul class="pedido-dicas">
+        <li><b>Guarde este link</b> (favoritos ou print da tela): ele vale para baixar de novo quando precisar.</li>
+        <li>No celular, o PDF vai para a pasta <b>Downloads</b> ou <b>Arquivos</b>.</li>
+        <li>Imprima em papel A4, em casa ou na gráfica, quantas vezes quiser.</li>
+      </ul>
+      <p class="pedido-miudo">Pedido ${escaparHtml(d.ref)} · pagamento ${escaparHtml(d.pagamento || '')}</p>`,
+
+    pendente: () => `
+      <div class="pedido-icone carregando" aria-hidden="true"></div>
+      <h1>Aguardando a confirmação do pagamento</h1>
+      <p>Se você pagou com Pix, a confirmação costuma levar poucos segundos. <b>Esta página atualiza sozinha</b> e o botão de download aparece aqui.</p>
+      <button type="button" class="btn-secundario" data-acao="verificar">Já paguei, verificar agora</button>`,
+
+    criado: (d) => {
+      const salvo = lerPedidos().find(p => p.ref === d.ref);
+      return `
+        <div class="pedido-icone espera" aria-hidden="true">…</div>
+        <h1>Ainda não recebemos o pagamento</h1>
+        <p>Pagou agora há pouco? Aguarde alguns segundos: esta página confere sozinha.</p>
+        <div class="pedido-acoes">
+          ${salvo && salvo.url ? `<a class="btn-checkout-kiwify" href="${escaparHtml(salvo.url)}">Continuar para o pagamento</a>` : ''}
+          <button type="button" class="btn-secundario" data-acao="verificar">Verificar de novo</button>
+        </div>`;
+    },
+
+    recusado: (d) => `
+      <div class="pedido-icone erro" aria-hidden="true">!</div>
+      <h1>O pagamento não foi aprovado</h1>
+      <p>Nenhum valor foi cobrado por este pedido. Você pode tentar de novo com Pix ou com outro cartão.</p>
+      <div class="pedido-acoes"><a class="btn-checkout-kiwify" href="${linkProduto(d.produto.id)}">Tentar de novo</a></div>`,
+
+    estornado: () => `
+      <div class="pedido-icone erro" aria-hidden="true">!</div>
+      <h1>Este pedido foi estornado</h1>
+      <p>O valor foi devolvido e o download não está mais disponível. Alguma dúvida? <a href="${WHATSAPP}" target="_blank" rel="noopener noreferrer">Fale com a gente no WhatsApp</a>.</p>`,
+
+    erro: (mensagem) => `
+      <div class="pedido-icone erro" aria-hidden="true">!</div>
+      <h1>Não conseguimos abrir este pedido</h1>
+      <p>${escaparHtml(mensagem)}</p>
+      <p>Se você já pagou, fique tranquilo: use o formulário abaixo ou <a href="${WHATSAPP}" target="_blank" rel="noopener noreferrer">chame no WhatsApp</a> que enviamos o arquivo.</p>`,
+
+    semPedido: () => `
+      <h1>Minhas compras</h1>
+      <p>As compras feitas neste aparelho aparecem logo abaixo. Comprou em outro celular ou computador? Recupere pelo número do pagamento.</p>`,
+  };
+  estados.cancelado = estados.recusado;
+
+  const consultar = async () => {
+    clearTimeout(relogio);
+    try {
+      const resposta = await fetch(`${CHECKOUT_URL}/api/pedido?ref=${encodeURIComponent(refAtual)}`);
+      const dados = await resposta.json().catch(() => ({}));
+      if (!resposta.ok) throw new Error(dados.erro || 'Tente de novo em instantes.');
+      desenhar((estados[dados.status] || estados.pendente)(dados));
+      salvarPedido({ ref: dados.ref, produto: dados.produto.id, nome: dados.produto.nome, status: dados.status });
+      listarCompras();
+      // Pix e pedido recém-criado: confere a cada 5 s por até 10 min.
+      if ((dados.status === 'pendente' || dados.status === 'criado') && ++tentativas < 120) {
+        relogio = setTimeout(consultar, 5000);
+      }
+    } catch (erro) {
+      desenhar(estados.erro(erro.message));
+    }
+  };
+
+  areaPedido.addEventListener('click', (e) => {
+    if (e.target.closest('[data-acao="verificar"]')) {
+      tentativas = 0;
+      desenhar(estados.carregando());
+      consultar();
+    }
+  });
+
+  const listaCompras = document.getElementById('lista-compras');
+  const blocoCompras = document.getElementById('minhas-compras');
+  const nomesStatus = { aprovado: 'Pago · baixar', pendente: 'Aguardando pagamento', criado: 'Pagamento não concluído', recusado: 'Não aprovado', cancelado: 'Cancelado', estornado: 'Estornado' };
+  const listarCompras = () => {
+    const pedidos = lerPedidos();
+    if (!listaCompras || !pedidos.length) return;
+    blocoCompras.hidden = false;
+    listaCompras.innerHTML = pedidos.map(p => `
+      <li><a href="/pedido/?ref=${encodeURIComponent(p.ref)}" class="${p.ref === refAtual ? 'atual' : ''}">
+        <span>${escaparHtml(p.nome)}</span>
+        <small class="st-${escaparHtml(p.status || 'criado')}">${nomesStatus[p.status] || 'Ver pedido'}</small>
+      </a></li>`).join('');
+  };
+
+  const form = document.getElementById('form-recuperar');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const aviso = form.querySelector('.aviso-form');
+      const botao = form.querySelector('button');
+      botao.disabled = true;
+      aviso.textContent = 'Procurando a sua compra…';
+      try {
+        const resposta = await fetch(`${CHECKOUT_URL}/api/recuperar`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ pagamento: form.pagamento.value, email: form.email.value }),
+        });
+        const dados = await resposta.json().catch(() => ({}));
+        if (!resposta.ok) throw new Error(dados.erro || 'Não encontramos essa compra.');
+        window.location.href = `/pedido/?ref=${encodeURIComponent(dados.ref)}`;
+      } catch (erro) {
+        aviso.textContent = erro.message;
+        botao.disabled = false;
+      }
+    });
+  }
+
+  if (refAtual) {
+    desenhar(estados.carregando());
+    consultar();
+  } else {
+    desenhar(estados.semPedido());
+  }
+  listarCompras();
+}
